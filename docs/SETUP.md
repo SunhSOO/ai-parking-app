@@ -118,17 +118,51 @@ npx supabase secrets set GEYE_ENDPOINT=https://... GEYE_API_KEY=... --project-re
 
 ## 3️⃣ 키 발급 — 앱에 실제 지도와 로그인 붙이기
 
-**쉬운 것부터** 정리했다. 하나씩 해도 되고, 하는 만큼 그 기능만 켜진다.
+하나씩 해도 되고, 하는 만큼 그 기능만 켜진다.
 (키가 없는 기능은 자동으로 목업/비활성으로 남는다)
+
+> **지도(3-A)는 유료다.** 로그인(3-B~D)과 완전히 무관하므로,
+> 로그인부터 붙이고 지도는 나중에 정해도 된다.
 
 받은 값은 전부 `app/config.json` 에 넣는다. 이 파일은 git에 올라가지 않는다.
 
-### 3-A. 네이버 지도 (가장 쉬움, 로그인과 무관)
+### 3-A. 지도 — ⚠️ 유료다. 서두르지 말 것
+
+**결론부터: 당장은 목업 지도를 그대로 두는 것을 권한다.** 비용이 0이고,
+나머지 11개 화면은 지도와 무관하게 전부 동작한다.
+
+#### 확인된 사실
+
+- 네이버 클라우드 Maps에서 무료 이용량이 제공되는 것은
+  **Web Dynamic Map · Static Map · Geocoding · Reverse Geocoding** 이다.
+  우리가 쓰는 **Mobile Dynamic Map(앱용 SDK)은 그 목록에 없다.**
+- 구 인증 방식(네이버 Open API)은 **2025-07-01자로 무료 제공이 중단**됐다.
+  (`flutter_naver_map` 패키지 문서에 명시)
+- 카카오맵도 2026년에 정책이 바뀌어 **개발자 계정의 첫 번째 앱에만 무료 쿼터**를 주고,
+  그 외에는 비즈월렛 연결 후 사용량 과금이다.
+
+정확한 단가는 공개 페이지가 JS로 렌더링돼 문서에 옮기지 못했다.
+**[콘솔의 요금 계산기](https://www.ncloud.com/charge/calc/ko)에서 직접 확인할 것.**
+
+#### 선택지
+
+| 안 | 비용 | 지도 품질(국내) | 작업량 |
+|---|---|---|---|
+| **목업 유지 (현재)** | 0원 | 격자 + 핀만 | 없음 |
+| 네이버 Mobile Dynamic Map | 유료(확인 필요) | 최상 | 키만 넣으면 됨 (코드 완료) |
+| 카카오맵 | 첫 앱만 무료 쿼터 | 상 | 패키지 교체 필요 |
+| Google Maps (`google_maps_flutter`) | 무료 한도 있음(확인 필요) | 중 (국내는 약함) | 패키지 교체 필요 |
+| OpenStreetMap (`flutter_map`) | 0원 | 하 (국내 데이터 부족) | 패키지 교체 필요 |
+
+지도는 `MockMapView` / `NaverMapView` 를 플래그로 갈아 끼우는 구조라
+(`parking_map_screen.dart`), 나중에 어느 쪽으로 바꿔도 **화면 코드는 그대로다.**
+정식 시연이나 배포 직전에 정하면 된다.
+
+#### 네이버로 가기로 정했다면
 
 1. [console.ncloud.com](https://console.ncloud.com) 가입 → 결제수단 등록
-   (무료 한도가 넉넉하지만 카드 등록은 필요하다)
 2. **Services → Application Services → Maps → Application 등록**
-3. API 선택에서 **Dynamic Map** 체크
+3. API 선택에서 **Mobile Dynamic Map** 체크
 4. 서비스 환경 등록:
    - Android 앱 패키지 이름: `kr.gailab.ai_parking`
    - iOS Bundle ID: `kr.gailab.aiParking`
@@ -139,6 +173,7 @@ npx supabase secrets set GEYE_ENDPOINT=https://... GEYE_API_KEY=... --project-re
 ```
 
 **확인**: 주차면 탭의 지도가 격자 목업에서 실제 네이버 지도로 바뀐다.
+**요금이 걱정되면 콘솔에서 사용량 알림·한도를 먼저 걸어 둘 것.**
 
 ### 3-B. 구글 로그인
 
