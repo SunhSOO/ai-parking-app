@@ -16,6 +16,9 @@ ai-parking-app/
 └─ config.example.json      빌드 시 주입할 키 목록
 ```
 
+> **남은 설정은 [docs/SETUP.md](docs/SETUP.md) 에 순서대로 정리돼 있다.**
+> RLS 구멍 막기 → Edge Function 배포 → 소셜 로그인·지도 키 발급.
+
 ## 지금 바로 실행하기 (키 없이)
 
 키가 하나도 없어도 **12개 화면이 전부 동작한다.** 목업 리포지토리가 프로토타입과 같은
