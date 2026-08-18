@@ -73,6 +73,7 @@ class Certification {
     this.failReason,
     this.verifiedAt,
     this.endedAt,
+    this.transmitted = false,
   });
 
   final String id;
@@ -89,6 +90,12 @@ class Certification {
   final DateTime? verifiedAt;
   final DateTime? endedAt;
 
+  /// 단속 시스템(G.Eye-Parking)에 **실제로** 전달했는지.
+  ///
+  /// 연동 전에는 항상 false다. 보내지 않고 보냈다고 표시하면 안 된다 —
+  /// 사용자는 그 표시를 믿고 차를 두고 간다.
+  final bool transmitted;
+
   bool get isRunning => status.isRunning && endedAt == null;
   bool get isVerified => status == CertStatus.verified;
 
@@ -104,7 +111,9 @@ class Certification {
   bool get stepDetectDone => status != CertStatus.detecting;
   bool get stepMatchDone =>
       status == CertStatus.sending || status.isDone;
-  bool get stepSendDone => status.isDone;
+
+  /// 전달 단계는 **정말 보냈을 때만** 완료로 표시한다.
+  bool get stepSendDone => status.isDone && transmitted;
 
   factory Certification.fromMap(Map<String, dynamic> m) => Certification(
         id: m['id'] as String,
@@ -120,6 +129,7 @@ class Certification {
         failReason: m['fail_reason'] as String?,
         verifiedAt: DateTime.tryParse(m['verified_at'] as String? ?? ''),
         endedAt: DateTime.tryParse(m['ended_at'] as String? ?? ''),
+        transmitted: m['transmitted'] as bool? ?? false,
       );
 
   Certification copyWith({
@@ -127,6 +137,7 @@ class Certification {
     DateTime? verifiedAt,
     DateTime? endedAt,
     String? receiptNo,
+    bool? transmitted,
   }) =>
       Certification(
         id: id,
@@ -142,5 +153,6 @@ class Certification {
         failReason: failReason,
         verifiedAt: verifiedAt ?? this.verifiedAt,
         endedAt: endedAt ?? this.endedAt,
+        transmitted: transmitted ?? this.transmitted,
       );
 }

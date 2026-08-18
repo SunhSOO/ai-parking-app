@@ -106,7 +106,13 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(find.text('인증됐어요 🎉'), findsOneWidget);
-      expect(find.text('전달됨'), findsOneWidget);
+      expect(find.text('일치'), findsOneWidget); // 차량 대조는 실제로 끝났다
+
+      // 단속 시스템(G.Eye-Parking) 연동 전에는 "전달됨"이라고 하면 안 된다.
+      // 보내지 않고 보냈다고 표시하면 사용자가 그걸 믿고 차를 두고 간다.
+      expect(find.text('연동 대기'), findsOneWidget);
+      expect(find.text('전달됨'), findsNothing);
+
       // 완료 시에만 나오는 두 버튼
       expect(find.text('확인증'), findsOneWidget);
       expect(find.text('숨기기'), findsNothing);

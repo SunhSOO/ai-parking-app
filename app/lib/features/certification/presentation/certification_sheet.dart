@@ -64,6 +64,7 @@ class _CertificationSheetState extends ConsumerState<CertificationSheet>
 
     final done = cert.isVerified;
     final running = cert.isRunning;
+    final failed = cert.status == CertStatus.failed;
     if (done) _onVerified(context);
 
     return Positioned.fill(
@@ -96,6 +97,7 @@ class _CertificationSheetState extends ConsumerState<CertificationSheet>
                   progress: cert.status.progress,
                   done: done,
                   running: running,
+                  failed: failed,
                 ),
               ),
             ),
@@ -112,12 +114,14 @@ class _Sheet extends ConsumerWidget {
     required this.progress,
     required this.done,
     required this.running,
+    required this.failed,
   });
 
   final Certification cert;
   final double progress;
   final bool done;
   final bool running;
+  final bool failed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -154,7 +158,9 @@ class _Sheet extends ConsumerWidget {
             Row(
               children: [
                 BlinkDot(
-                  color: done ? AppColors.mint : AppColors.purple,
+                  color: failed
+                      ? AppColors.danger
+                      : (done ? AppColors.mint : AppColors.purple),
                   size: 8,
                   animate: running,
                   period: const Duration(seconds: 1),
@@ -165,7 +171,7 @@ class _Sheet extends ConsumerWidget {
                   style: appText(
                     size: 12,
                     weight: 900,
-                    color: AppColors.purple,
+                    color: failed ? AppColors.danger : AppColors.purple,
                     emSpacing: .04,
                   ),
                 ),
@@ -176,14 +182,25 @@ class _Sheet extends ConsumerWidget {
             const SizedBox(height: 12),
 
             Text(
-              done ? '인증됐어요 🎉' : '장애인주차면에\n도착했어요',
+              switch ((failed, done)) {
+                (true, _) => '인증하지 못했어요',
+                (_, true) => '인증됐어요 🎉',
+                _ => '장애인주차면에\n도착했어요',
+              },
               style: appText(size: 25, weight: 900, height: 1.25, emSpacing: -.02),
             ),
             const SizedBox(height: 5),
             Text(
-              done
-                  ? '${cert.spotName ?? ''}. 단속 대상에서 제외됐어요.'
-                  : '${cert.spotName ?? ''} · 반경 ${cert.radiusM}m. 그대로 두시면 인증이 끝나요.',
+              switch ((failed, done)) {
+                (true, _) =>
+                  '${cert.failReason ?? '알 수 없는 이유로 실패했어요'}. 마이페이지에서 차량을 등록하면 다음부터는 자동으로 인증돼요.',
+                (_, true) when !cert.transmitted =>
+                  '${cert.spotName ?? ''}. 인증 기록이 저장됐어요. '
+                      '단속 시스템 연동은 준비 중이라 아직 전달되지 않았어요.',
+                (_, true) => '${cert.spotName ?? ''}. 단속 대상에서 제외됐어요.',
+                _ =>
+                  '${cert.spotName ?? ''} · 반경 ${cert.radiusM}m. 그대로 두시면 인증이 끝나요.',
+              },
               style: appText(size: 13, height: 1.65, color: AppColors.mutedStrong),
             ),
 
@@ -205,13 +222,41 @@ class _Sheet extends ConsumerWidget {
             const SizedBox(height: 7),
             _StepRow(
               label: '단속 시스템에 인증 전달',
-              note: cert.stepSendDone ? '전달됨' : '대기',
+              // 아직 안 보냈으면 보냈다고 하지 않는다.
+              note: cert.stepSendDone
+                  ? '전달됨'
+                  : (done ? '연동 대기' : '대기'),
               done: cert.stepSendDone,
             ),
 
             const SizedBox(height: 16),
 
-            if (done)
+            if (failed)
+              Row(
+                children: [
+                  Expanded(
+                    child: SoftButton(
+                      label: '닫기',
+                      height: 52,
+                      fontSize: 15,
+                      onPressed: controller.dismiss,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: GradientButton(
+                      label: '차량 등록하기',
+                      height: 52,
+                      fontSize: 15,
+                      onPressed: () {
+                        controller.dismiss();
+                        context.go(Routes.profile);
+                      },
+                    ),
+                  ),
+                ],
+              )
+            else if (done)
               Row(
                 children: [
                   Expanded(

@@ -137,6 +137,8 @@ Deno.serve(async (req) => {
       verified_at: new Date().toISOString(),
       receipt_no: receiptNo,
       fee_note: feeNote,
+      // 실제로 2xx 를 받았을 때만 true. 앱은 이 값으로 "전달됨"을 표시한다.
+      transmitted: Boolean(GEYE_ENDPOINT),
     });
 
     return new Response(JSON.stringify({ ok: true, receipt_no: receiptNo }));
