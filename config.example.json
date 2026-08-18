@@ -1,0 +1,18 @@
+{
+  "_comment": "이 파일을 app/config.json 으로 복사한 뒤 값을 채우세요. 실행: flutter run --dart-define-from-file=config.json",
+
+  "SUPABASE_URL": "https://<project-ref>.supabase.co",
+  "SUPABASE_PUBLISHABLE_KEY": "<publishable key (예전 이름: anon key). service_role 키는 절대 넣지 말 것>",
+
+  "NAVER_MAP_CLIENT_ID": "<네이버 클라우드 플랫폼 > Maps > Dynamic Map 의 Client ID>",
+
+  "KAKAO_NATIVE_APP_KEY": "<카카오 개발자 > 앱 키 > 네이티브 앱 키>",
+  "KAKAO_JS_KEY": "<카카오 JavaScript 키>",
+
+  "GOOGLE_IOS_CLIENT_ID": "<GoogleService-Info 의 CLIENT_ID>",
+  "GOOGLE_SERVER_CLIENT_ID": "<웹 클라이언트 ID (Supabase Google provider 에 넣은 것과 동일)>",
+
+  "_dev": "아래는 개발용 테스트 계정. 소셜 로그인 키가 없어도 Supabase 경로를 확인하려고 쓴다. 디버그 빌드에서만 동작하고, 비워 두면 버튼이 뜨지 않는다.",
+  "DEV_LOGIN_EMAIL": "",
+  "DEV_LOGIN_PASSWORD": ""
+}

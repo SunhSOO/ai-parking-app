@@ -1,0 +1,42 @@
+# 키가 들어가는 파일 — 절대 커밋하지 않는다
+app/config.json
+config.json
+.env
+*.keystore
+*.jks
+app/android/key.properties
+app/ios/Runner/GoogleService-Info.plist
+app/android/app/google-services.json
+
+# Flutter / Dart
+app/.dart_tool/
+app/.flutter-plugins-dependencies
+app/build/
+.packages
+# pubspec.lock 은 앱이므로 커밋한다 (팀원 간 같은 버전으로 고정)
+
+# Android
+app/android/.gradle/
+app/android/local.properties
+app/android/app/debug/
+app/android/app/profile/
+app/android/app/release/
+
+# iOS
+app/ios/Pods/
+app/ios/.symlinks/
+app/ios/Flutter/Flutter.framework
+app/ios/Flutter/Flutter.podspec
+app/ios/Flutter/Generated.xcconfig
+app/ios/Flutter/flutter_export_environment.sh
+
+# Supabase
+supabase/.branches
+supabase/.temp
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
